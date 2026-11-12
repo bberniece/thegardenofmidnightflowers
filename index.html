@@ -172,6 +172,8 @@ const fresh=()=>({ep:'ep1',i:0,ch:{},st:Object.fromEntries(Object.keys(STATS).ma
 const norm=x=>{const f=fresh();return x&&EP[x.ep]?{...f,...x,ch:{...x.ch},st:{...f.st,...x.st}}:f};
 let S=fresh(),cfg={music:1,vol:.6,sfx:1,type:1,spd:3,...rd('sgc_cfg')};
 const save=()=>wr('sgc_auto',S);
+/* ===== Цели Яндекс Метрики ===== */
+const goal=(g,p)=>{try{window.ym&&ym(114224858,'reachGoal',g,p)}catch(e){}};
 /* ===== Звук: музыка синтезируется в браузере (своих файлов нет, лицензии не нужны).
    Чтобы подключить свой трек, впишите путь в AUDIO.music ===== */
 const AUDIO={music:''};
@@ -219,7 +221,7 @@ function adv(){const t=Date.now();if(modal||lock||t-last<150||!$('#game').classL
  if(typing){clearTimeout(timer);paint(typing,typing.length);typing='';done();return}
  const n=cur();if(!n||n.k=='ch')return;sfx('t');S.i++;save();show()}
 /* ===== ChoiceMenu + CharacterStats ===== */
-function pick(n,o){if(lock||S.ch[n.id])return;lock=1;S.ch[n.id]=o.s;S.st[o.s]=(S.st[o.s]||0)+1;S.i++;save();$('#ch').innerHTML='';box.hidden=true;sfx('ok');
+function pick(n,o){if(lock||S.ch[n.id])return;lock=1;goal('choice_made',{choice:n.id,stat:o.s});goal('choice_'+o.s);S.ch[n.id]=o.s;S.st[o.s]=(S.st[o.s]||0)+1;S.i++;save();$('#ch').innerHTML='';box.hidden=true;sfx('ok');
  const t=document.createElement('div');t.className='toast '+o.c;t.innerHTML='<div class="pp"><b class="co"></b><i class="gem"></i><span class="plus">+1</span><span class="nm">'+STATS[o.s]+'</span></div>';$('#game').appendChild(t);
  setTimeout(()=>{t.remove();lock=0;show()},2100)}
 /* ===== Экраны и меню ===== */
@@ -235,7 +237,7 @@ const V={
 };
 const start=()=>{go('game');lock=0;show();audio()};
 const A={
- new(){S=fresh();save();start()},
+ new(){S=fresh();save();goal('start_story');start()},
  cont(){S=norm(rd('sgc_auto'));start()},
  close,gm:V.gm,st:V.st,set:V.set,about:V.about,
  title(){close();go('title')},
